@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from rag_chain import (
+from Rag.rag_chain import (
     RAGConfig,
     HashEmbeddings,
     UrgeEaseRAGChain,

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import re
 import hashlib
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional, Callable
@@ -27,13 +28,17 @@ class HashEmbeddings(Embeddings):
         self.dim = dim
 
     def _embed(self, text: str) -> List[float]:
-        # Create stable pseudo-vector from sha256 digest
-        digest = hashlib.sha256(text.encode("utf-8")).digest()
-        # Expand digest into dim floats deterministically
-        vec = []
-        for i in range(self.dim):
-            b = digest[i % len(digest)]
-            vec.append((b - 128) / 128.0)  # normalize roughly to [-1, 1]
+        # Hashing trick on tokens
+        tokens = re.findall(r"[a-z0-9']+", text.lower())
+        vec = [0.0] * self.dim
+        for tok in tokens:
+            h = hashlib.md5(tok.encode("utf-8")).hexdigest()
+            idx = int(h, 16) % self.dim
+            vec[idx] += 1.0
+
+        norm = sum(v * v for v in vec) ** 0.5
+        if norm > 0:
+            vec = [v / norm for v in vec]
         return vec
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
@@ -175,7 +180,7 @@ User message: {query}
 
 Respond with:
 1) Supportive response
-2) 1–3 practical next steps (CBT/ACT style)
+2) 1-3 practical next steps (CBT/ACT style)
 3) Sources used (filenames)
 """
 
@@ -191,7 +196,26 @@ def fake_llm(prompt: str) -> str:
     It echoes a short confirmation so you can verify the pipeline end-to-end.
     """
     # Keep it simple and deterministic
-    return "OK (FAKE LLM): I received the prompt and context. Sources used: (see docs)."
+    sources = []
+    for line in prompt.splitlines():
+        if line.startswith("[SOURCE:"):
+            name = line.replace("[SOURCE:", "").replace("]", "").strip()
+            sources.append(name)
+
+    seen = set()
+    sources_unique = [s for s in sources if not (s in seen or seen.add(s))]
+    sources_str = ", ".join(sources_unique) if sources_unique else "none"
+
+    return (
+        "1) Supportive response\n"
+        "It makes sense to feel stuck sometimes. If you're dealing with urges, we can try a small step right now.\n\n"
+        "2) Practical next steps\n"
+        "- Name the urge (0-10), then pause and breathe slowly for 60 seconds.\n"
+        "- Delay 10 minutes and do a quick replacement action (walk, water, message a friend).\n"
+        "- Note the trigger: time, mood, place, or device.\n\n"
+        "3) Sources used\n"
+        f"{sources_str}"
+    )
 
 
 # ----------------------------

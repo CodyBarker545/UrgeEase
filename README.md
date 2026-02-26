@@ -97,22 +97,17 @@ IMPORTANT:
 Do NOT commit .env files to GitHub.
 
 ------------------------------------------------------------
-RUNNING THE RAG BACKEND MANUALLY
+RUNNING THE RAG BACKEND (DEMO)
 ------------------------------------------------------------
 
-Inside the Rag folder in backend:
+From the backend folder:
 
-    python
+    python -m Rag.demo_rag
 
-Then run:
-
-    from rag_chain import UrgeEaseRAGChain, RAGConfig, HashEmbeddings
-
-    cfg = RAGConfig(data_dir="data", index_dir="vectorstore")
-    chain = UrgeEaseRAGChain(cfg, HashEmbeddings())
-
-    response = chain.invoke("How do I manage urges?")
-    print(response["result"])
+This runs a small demo using:
+    backend/Rag/data/rag_data.txt
+and builds the FAISS index under:
+    backend/Rag/vectorstore/
 
 ------------------------------------------------------------
 DEVELOPMENT NOTES
@@ -135,6 +130,6 @@ If a user expresses suicidal intent, the system provides crisis resources instea
 AUTHORS
 ------------------------------------------------------------
 
-UrgeEase Capstone Project Group 5
+UrgeEase Capstone Project Group 6
 Software Engineering Technology – Artificial Intelligence
 Centennial College
