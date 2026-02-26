@@ -1,0 +1,140 @@
+============================================================
+URGE EASE
+AI-Powered Behavioral Recovery Support Application
+============================================================
+
+UrgeEase is an AI-powered support application designed to help users manage behavioral addictions such as excessive pornography and social media use.
+
+The system consists of:
+
+1) Python RAG Backend (LangChain + FAISS)
+2) Next.js Frontend (React + Node.js)
+
+------------------------------------------------------------
+PREREQUISITES
+------------------------------------------------------------
+
+Before installing, make sure you have:
+
+- Python 3.10 or higher
+- Node.js 18 or higher
+- npm
+- Git
+
+Check your versions using:
+
+    python --version
+    node --version
+    npm --version
+
+
+------------------------------------------------------------
+INSTALLATION INSTRUCTIONS
+------------------------------------------------------------
+
+========================
+1) BACKEND SETUP (Python)
+========================
+
+Step 1: Navigate to backend folder
+
+    cd backend
+
+Step 2: Create virtual environment
+
+    python -m venv .venv
+
+Step 3: Activate virtual environment
+
+    On Windows:
+        .\.venv\Scripts\Activate.ps1
+
+    On Mac/Linux:
+        source .venv/bin/activate
+
+Step 4: Install required Python packages
+
+    pip install -r requirements.txt
+
+Step 5 (Optional): Run unit tests
+
+    pytest
+
+------------------------------------------------------------
+
+========================
+2) FRONTEND SETUP (Next.js)
+========================
+
+Step 1: Navigate to frontend folder
+
+    cd frontend
+
+Step 2: Install Node dependencies
+
+    npm install
+
+Step 3: Start development server
+
+    npm run dev
+
+The frontend will be available at:
+
+    http://localhost:3000
+
+------------------------------------------------------------
+ENVIRONMENT VARIABLES
+------------------------------------------------------------
+
+If using Gemini API or Supabase, create a .env file in the appropriate folder.
+
+Example:
+
+    GEMINI_API_KEY=your_api_key_here
+    
+
+IMPORTANT:
+Do NOT commit .env files to GitHub.
+
+------------------------------------------------------------
+RUNNING THE RAG BACKEND MANUALLY
+------------------------------------------------------------
+
+Inside the Rag folder in backend:
+
+    python
+
+Then run:
+
+    from rag_chain import UrgeEaseRAGChain, RAGConfig, HashEmbeddings
+
+    cfg = RAGConfig(data_dir="data", index_dir="vectorstore")
+    chain = UrgeEaseRAGChain(cfg, HashEmbeddings())
+
+    response = chain.invoke("How do I manage urges?")
+    print(response["result"])
+
+------------------------------------------------------------
+DEVELOPMENT NOTES
+------------------------------------------------------------
+
+- Backend uses FAISS for local vector storage.
+- HashEmbeddings is used for offline testing.
+- Crisis detection blocks self-harm responses.
+- Frontend built with Next.js 14.
+
+------------------------------------------------------------
+SECURITY NOTICE
+------------------------------------------------------------
+
+UrgeEase is NOT a licensed medical or mental health tool.
+
+If a user expresses suicidal intent, the system provides crisis resources instead of advice.
+
+------------------------------------------------------------
+AUTHORS
+------------------------------------------------------------
+
+UrgeEase Capstone Project Group 5
+Software Engineering Technology – Artificial Intelligence
+Centennial College
