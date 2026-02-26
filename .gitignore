@@ -1,0 +1,26 @@
+# Node / Next
+node_modules/
+.next/
+out/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Vectorstore artifacts
+backend/**/vectorstore/
+backend/**/index.faiss
+backend/**/index.pkl
+backend/**/prev_hash.txt
+
+# OS
+.DS_Store
+Thumbs.db
+.vscode/

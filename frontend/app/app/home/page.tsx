@@ -1,0 +1,212 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { MessageSquare, Mic, FileText, BarChart3, History as HistoryIcon } from 'lucide-react'
+import { createSession, getResults } from '@/frontend/lib/api'
+import { useRouter } from 'next/navigation'
+
+export default function HomePage() {
+  const router = useRouter()
+  const [sessionsCompleted, setSessionsCompleted] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      const results = await getResults()
+      setSessionsCompleted(results.sessionsCompleted)
+      setLoading(false)
+    }
+    loadData()
+  }, [])
+
+  const handleStartSession = async (mode: 'chat' | 'voice') => {
+    const { sessionId } = await createSession({ mode })
+    router.push(`/app/session/${mode}?sessionId=${sessionId}`)
+  }
+
+  const resultsUnlocked = sessionsCompleted >= 3
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-6">
+      <div>
+        <h1 className="text-3xl font-semibold" style={{ color: 'var(--color-text-dark)', fontFamily: 'var(--font-primary)' }}>
+          Welcome back
+        </h1>
+        <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          Continue your journey with private, judgment-free support.
+        </p>
+      </div>
+
+      
+      <div
+        className="rounded-2xl p-6 shadow-lg"
+        style={{
+          backgroundColor: 'var(--color-card-bg)',
+          border: '1px solid rgba(227, 155, 99, 0.2)',
+        }}
+      >
+        <h2 className="mb-4 text-lg font-semibold" style={{ color: 'var(--color-text-dark)' }}>
+          Continue
+        </h2>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={() => handleStartSession('chat')}
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium transition-all"
+            style={{
+              backgroundColor: 'var(--color-accent)',
+              color: 'var(--color-text-light)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--color-accent-dark)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--color-accent)'
+            }}
+          >
+            <MessageSquare className="h-5 w-5" />
+            Start Chat
+          </button>
+          <button
+            onClick={() => handleStartSession('voice')}
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 font-medium transition-all"
+            style={{
+              borderColor: 'var(--color-accent)',
+              color: 'var(--color-accent)',
+              backgroundColor: 'transparent',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(227, 155, 99, 0.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+          >
+            <Mic className="h-5 w-5" />
+            Start Voice
+          </button>
+        </div>
+      </div>
+
+      
+      <div
+        className="rounded-2xl p-6 shadow-lg"
+        style={{
+          backgroundColor: 'var(--color-card-bg)',
+          border: '1px solid rgba(227, 155, 99, 0.2)',
+        }}
+      >
+        <h2 className="mb-2 text-lg font-semibold" style={{ color: 'var(--color-text-dark)' }}>
+          Progress
+        </h2>
+        {loading ? (
+          <div className="h-8 w-48 animate-pulse rounded" style={{ backgroundColor: 'rgba(227, 155, 99, 0.2)' }} />
+        ) : (
+          <>
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              Sessions completed: <strong style={{ color: 'var(--color-text-dark)' }}>{sessionsCompleted}/5</strong>
+            </p>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full" style={{ backgroundColor: 'rgba(227, 155, 99, 0.2)' }}>
+              <div
+                className="h-full transition-all"
+                style={{
+                  width: `${Math.min((sessionsCompleted / 5) * 100, 100)}%`,
+                  backgroundColor: 'var(--color-accent)',
+                }}
+              />
+            </div>
+            <p className="mt-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              {resultsUnlocked
+                ? 'Results dashboard unlocked!'
+                : `Complete ${3 - sessionsCompleted} more ${sessionsCompleted === 2 ? 'session' : 'sessions'} to unlock results.`}
+            </p>
+          </>
+        )}
+      </div>
+
+      
+      <div className="grid gap-4 sm:grid-cols-3">
+          <Link
+            href="/app/sessions"
+          className="flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-all"
+          style={{
+            borderColor: 'rgba(227, 155, 99, 0.2)',
+            backgroundColor: 'var(--color-card-bg)',
+            color: 'var(--color-text-dark)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-accent)'
+            e.currentTarget.style.backgroundColor = 'rgba(227, 155, 99, 0.05)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(227, 155, 99, 0.2)'
+            e.currentTarget.style.backgroundColor = 'var(--color-card-bg)'
+          }}
+        >
+          <MessageSquare className="h-6 w-6" style={{ color: 'var(--color-accent)' }} />
+          <span className="text-sm font-medium">View Sessions</span>
+        </Link>
+
+          <Link
+            href={resultsUnlocked ? '/app/results' : '#'}
+          className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-all ${
+            !resultsUnlocked ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          style={{
+            borderColor: 'rgba(227, 155, 99, 0.2)',
+            backgroundColor: 'var(--color-card-bg)',
+            color: 'var(--color-text-dark)',
+          }}
+          onClick={(e) => {
+            if (!resultsUnlocked) e.preventDefault()
+          }}
+          onMouseEnter={(e) => {
+            if (resultsUnlocked) {
+              e.currentTarget.style.borderColor = 'var(--color-accent)'
+              e.currentTarget.style.backgroundColor = 'rgba(227, 155, 99, 0.05)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (resultsUnlocked) {
+              e.currentTarget.style.borderColor = 'rgba(227, 155, 99, 0.2)'
+              e.currentTarget.style.backgroundColor = 'var(--color-card-bg)'
+            }
+          }}
+        >
+          <BarChart3 className="h-6 w-6" style={{ color: 'var(--color-accent)' }} />
+          <span className="text-sm font-medium">View Results</span>
+          {!resultsUnlocked && <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Locked</span>}
+        </Link>
+
+          <Link
+            href="/app/history"
+          className="flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-all"
+          style={{
+            borderColor: 'rgba(227, 155, 99, 0.2)',
+            backgroundColor: 'var(--color-card-bg)',
+            color: 'var(--color-text-dark)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-accent)'
+            e.currentTarget.style.backgroundColor = 'rgba(227, 155, 99, 0.05)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(227, 155, 99, 0.2)'
+            e.currentTarget.style.backgroundColor = 'var(--color-card-bg)'
+          }}
+        >
+          <HistoryIcon className="h-6 w-6" style={{ color: 'var(--color-accent)' }} />
+          <span className="text-sm font-medium">View History</span>
+        </Link>
+      </div>
+
+      
+      <div className="rounded-lg p-4 text-center text-xs" style={{ backgroundColor: 'rgba(227, 155, 99, 0.05)' }}>
+        <p style={{ color: 'var(--color-text-muted)' }}>
+          🔒 Stored locally by default. Your conversations are private.
+        </p>
+      </div>
+    </div>
+  )
+}
+

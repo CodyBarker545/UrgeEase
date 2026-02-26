@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 180 60% 35%; 
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 15% 94%;
+    --secondary-foreground: 222 47% 15%;
+
+    --muted: 210 16% 92%;
+    --muted-foreground: 215 16% 40%;
+
+    --accent: 188 70% 40%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 188 70% 40%;
+
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.09);
+  }
+
+  .dark {
+    --background: 222 47% 10%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 13%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 180 60% 45%;
+    --primary-foreground: 222 47% 10%;
+
+    --secondary: 222 34% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 34% 18%;
+    --muted-foreground: 215 20% 70%;
+
+    --accent: 188 70% 45%;
+    --accent-foreground: 222 47% 10%;
+
+    --destructive: 0 73% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 36% 24%;
+    --input: 222 36% 24%;
+    --ring: 188 70% 45%;
+
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.6);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  a {
+    @apply underline-offset-4;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply min-h-screen bg-gradient-to-b from-background via-background to-slate-100/60 dark:to-slate-950/80;
+  }
+
+  .glass-card {
+    @apply rounded-2xl bg-card/90 shadow-subtle border border-border/60 backdrop-blur-sm;
+  }
+
+  .pill-badge {
+    @apply inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground;
+  }
+
+  .sr-only {
+    @apply absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
