@@ -1,0 +1,159 @@
+use AddictionRecoverPlatform;
+
+// -------------------- USERS --------------------
+db.createCollection("users", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["email", "passwordHash", "preferredName", "createdAt", "emailVerified"],
+      properties: {
+        email: { bsonType: "string", pattern: "^\\S+@\\S+\\.\\S+$" },
+        passwordHash: { bsonType: "string" },
+        preferredName: { bsonType: "string", minLength: 1 },
+        emailVerified: { bsonType: "bool" },
+        createdAt: { bsonType: "date" },
+        lastLoginAt: { bsonType: ["date", "null"] },
+        syncConsent: { bsonType: "bool" },     // future cloud sync consent
+        deletedAt: { bsonType: ["date", "null"] }
+      }
+    }
+  }
+});
+db.users.createIndex({ email: 1 }, { unique: true });
+
+// -------------------- USER SETTINGS --------------------
+db.createCollection("user_settings", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["userId", "theme", "dataStorageMode", "updatedAt"],
+      properties: {
+        userId: { bsonType: "objectId" },
+        theme: { enum: ["light", "dark", "system"] },
+        dataStorageMode: { enum: ["local_default", "cloud_opt_in"] },
+        updatedAt: { bsonType: "date" }
+      }
+    }
+  }
+});
+db.user_settings.createIndex({ userId: 1 }, { unique: true });
+
+// -------------------- SESSIONS --------------------
+db.createCollection("sessions", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["userId", "mode", "status", "messageCount", "createdAt", "startedAt"],
+      properties: {
+        userId: { bsonType: "objectId" },
+        mode: { enum: ["chat", "voice"] },
+        status: { enum: ["active", "completed", "archived"] },
+        title: { bsonType: "string" },
+        messageCount: { bsonType: "int", minimum: 0 },
+        startedAt: { bsonType: "date" },
+        endedAt: { bsonType: ["date", "null"] },
+        createdAt: { bsonType: "date" },
+        localOnly: { bsonType: "bool" },       // “Stored locally by default”
+        syncedAt: { bsonType: ["date", "null"] }
+      }
+    }
+  }
+});
+db.sessions.createIndex({ userId: 1, createdAt: -1 });
+
+// -------------------- MESSAGES --------------------
+db.createCollection("messages", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["sessionId", "userId", "role", "content", "createdAt"],
+      properties: {
+        sessionId: { bsonType: "objectId" },
+        userId: { bsonType: "objectId" },
+        role: { enum: ["user", "assistant", "system"] },
+        content: { bsonType: "string" },
+        createdAt: { bsonType: "date" },
+        audio: {
+          bsonType: ["object", "null"],
+          properties: {
+            transcript: { bsonType: "string" },
+            audioUrl: { bsonType: "string" },
+            durationSec: { bsonType: "int", minimum: 0 }
+          }
+        }
+      }
+    }
+  }
+});
+db.messages.createIndex({ sessionId: 1, createdAt: 1 });
+db.messages.createIndex({ userId: 1, createdAt: -1 });
+
+// -------------------- RESULTS (DASHBOARD) --------------------
+db.createCollection("results", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["userId", "generatedAt", "insights"],
+      properties: {
+        userId: { bsonType: "objectId" },
+        generatedFromSessionIds: { bsonType: "array", items: { bsonType: "objectId" } },
+        generatedAt: { bsonType: "date" },
+        modelVersion: { bsonType: "string" },
+        insights: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["label", "confidence", "topTriggers"],
+            properties: {
+              label: { bsonType: "string" },           // e.g., "Social Media"
+              confidence: { bsonType: "double", minimum: 0, maximum: 1 },
+              topTriggers: { bsonType: "array", items: { bsonType: "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+});
+db.results.createIndex({ userId: 1, generatedAt: -1 });
+
+// -------------------- TRIGGER LOGS (optional) --------------------
+db.createCollection("trigger_logs", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["userId", "sessionId", "trigger", "createdAt"],
+      properties: {
+        userId: { bsonType: "objectId" },
+        sessionId: { bsonType: "objectId" },
+        trigger: { bsonType: "string" },
+        category: { bsonType: ["string", "null"] },
+        intensity: { bsonType: ["int", "null"], minimum: 0, maximum: 10 },
+        notes: { bsonType: ["string", "null"] },
+        createdAt: { bsonType: "date" }
+      }
+    }
+  }
+});
+db.trigger_logs.createIndex({ userId: 1, createdAt: -1 });
+db.trigger_logs.createIndex({ sessionId: 1, createdAt: -1 });
+
+// -------------------- CRISIS RESOURCES --------------------
+db.createCollection("crisis_resources", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["country", "name", "contact", "availability", "description", "sortOrder", "active"],
+      properties: {
+        country: { bsonType: "string" }, // "Canada" / "United States"
+        name: { bsonType: "string" },
+        contact: { bsonType: "string" }, // phone/text
+        availability: { bsonType: "string" }, // "24/7", etc
+        description: { bsonType: "string" },
+        sortOrder: { bsonType: "int" },
+        active: { bsonType: "bool" }
+      }
+    }
+  }
+});
+db.crisis_resources.createIndex({ country: 1, sortOrder: 1 });
