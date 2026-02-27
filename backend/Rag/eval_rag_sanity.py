@@ -23,7 +23,7 @@ def main() -> None:
     passed = 0
     for name, q, expected_crisis in cases:
         out = chain.invoke(q)
-        ok = (out["crisis"] == expected_crisis)
+        ok = out["crisis"] == expected_crisis
         if not expected_crisis:
             ok = ok and (len(out.get("source_documents", [])) > 0)
 

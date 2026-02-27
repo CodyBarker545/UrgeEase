@@ -26,7 +26,9 @@ def main() -> None:
         print("\nA:\n", out["result"])
 
         if out.get("source_documents"):
-            sources = sorted({d.metadata.get("source", "unknown") for d in out["source_documents"]})
+            sources = sorted(
+                {d.metadata.get("source", "unknown") for d in out["source_documents"]}
+            )
             print("\nRetrieved:", ", ".join(sources))
 
 

@@ -2,25 +2,37 @@
 node_modules/
 .next/
 out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Python
 .venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+.mypy_cache/
+.pytype/
+.pyright/
+*.egg-info/
+dist/
+build/
 
 # Env files
 .env
 .env.*
 !.env.example
 
-# Vectorstore artifacts
-backend/**/vectorstore/
-backend/**/index.faiss
-backend/**/index.pkl
-backend/**/prev_hash.txt
+# Vectorstore artifacts (generated)
+backend/**/vectorstore/*
+!backend/**/vectorstore/.gitkeep
 
 # OS
 .DS_Store
 Thumbs.db
-.vscode/
+
+# VS Code (keep shared workspace settings)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json

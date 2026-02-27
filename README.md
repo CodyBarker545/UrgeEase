@@ -16,7 +16,8 @@ PREREQUISITES
 
 Before installing, make sure you have:
 
-- Python 3.10 or higher
+- Python 3.11 or 3.12 (recommended)
+- avoid python 3.14 for this project
 - Node.js 18 or higher
 - npm
 - Git
@@ -44,6 +45,9 @@ Step 2: Create virtual environment
 
     python -m venv .venv
 
+    if you have multiple python versions installed:
+        py -3.11 -m venv .venv
+
 Step 3: Activate virtual environment
 
     On Windows:
@@ -58,7 +62,7 @@ Step 4: Install required Python packages
 
 Step 5 (Optional): Run unit tests
 
-    pytest
+    python -m pytest
 
 ------------------------------------------------------------
 
@@ -105,9 +109,12 @@ From the backend folder:
     python -m Rag.demo_rag
 
 This runs a small demo using:
-    backend/Rag/data/rag_data.txt
+    backend/Rag/data/  (includes multiple .txt demo files)
+    example files: rag_data.txt, coping_strategies.txt, trigger_tracking.txt, sleep_and_routine.txt
 and builds the FAISS index under:
     backend/Rag/vectorstore/
+
+vectorstore/ is generated when the demo runs and is ignored by git.
 
 ------------------------------------------------------------
 DEVELOPMENT NOTES

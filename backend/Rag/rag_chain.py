@@ -52,9 +52,17 @@ class HashEmbeddings(Embeddings):
 # Safety / Crisis gating
 # ----------------------------
 CRISIS_KEYWORDS = [
-    "suicide", "kill myself", "end my life", "self-harm", "hurt myself",
-    "want to die", "cut myself", "overdose", "can't go on"
+    "suicide",
+    "kill myself",
+    "end my life",
+    "self-harm",
+    "hurt myself",
+    "want to die",
+    "cut myself",
+    "overdose",
+    "can't go on",
 ]
+
 
 def is_crisis(text: str) -> bool:
     t = text.lower()
@@ -102,17 +110,25 @@ def build_or_load_vectorstore(
     os.makedirs(cfg.index_dir, exist_ok=True)
 
     index_path = os.path.join(cfg.index_dir, "index.faiss")
-    pkl_path = os.path.join(cfg.index_dir, "index.pkl")  # FAISS uses this name for docstore
+    pkl_path = os.path.join(
+        cfg.index_dir, "index.pkl"
+    )  # FAISS uses this name for docstore
     hash_path = os.path.join(cfg.index_dir, "prev_hash.txt")
 
     current_hash = _compute_dir_hash(cfg.data_dir)
 
     # If index exists + hash matches → load
-    if os.path.exists(index_path) and os.path.exists(pkl_path) and os.path.exists(hash_path):
+    if (
+        os.path.exists(index_path)
+        and os.path.exists(pkl_path)
+        and os.path.exists(hash_path)
+    ):
         with open(hash_path, "r", encoding="utf-8") as f:
             old_hash = f.read().strip()
         if old_hash == current_hash:
-            return FAISS.load_local(cfg.index_dir, embeddings, allow_dangerous_deserialization=True)
+            return FAISS.load_local(
+                cfg.index_dir, embeddings, allow_dangerous_deserialization=True
+            )
 
     # Otherwise rebuild
     splitter = RecursiveCharacterTextSplitter(
@@ -190,6 +206,7 @@ Respond with:
 # ----------------------------
 LLMFn = Callable[[str], str]
 
+
 def fake_llm(prompt: str) -> str:
     """
     Offline LLM stub for unit tests.
@@ -237,11 +254,16 @@ class UrgeEaseRAGChain:
         search_kwargs = {"k": cfg.k}
         # MMR improves diversity (optional)
         if cfg.use_mmr:
-            self.retriever = self.vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": cfg.k, "fetch_k": max(10, cfg.k * 3)})
+            self.retriever = self.vectorstore.as_retriever(
+                search_type="mmr",
+                search_kwargs={"k": cfg.k, "fetch_k": max(10, cfg.k * 3)},
+            )
         else:
             self.retriever = self.vectorstore.as_retriever(search_kwargs=search_kwargs)
 
-    def invoke(self, question: str, chat_history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
+    def invoke(
+        self, question: str, chat_history: Optional[List[Dict[str, str]]] = None
+    ) -> Dict[str, Any]:
         # Crisis gate
         if is_crisis(question):
             return {
@@ -255,7 +277,10 @@ class UrgeEaseRAGChain:
 
         docs = self.retriever.invoke(question)
         context = "\n\n".join(
-            [f"[SOURCE: {d.metadata.get('source','unknown')}]\n{d.page_content}" for d in docs]
+            [
+                f"[SOURCE: {d.metadata.get('source','unknown')}]\n{d.page_content}"
+                for d in docs
+            ]
         )
 
         prompt = build_prompt(history_str, context, question)

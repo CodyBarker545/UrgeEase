@@ -32,7 +32,9 @@ def main() -> None:
         print(f"{fn}: chars={len(text)} words={len(text.split())} chunks={len(chunks)}")
 
     print("\nTOTAL")
-    print(f"files={len(files)} chars={total_chars} words={total_words} chunks={total_chunks}")
+    print(
+        f"files={len(files)} chars={total_chars} words={total_words} chunks={total_chunks}"
+    )
 
 
 if __name__ == "__main__":
